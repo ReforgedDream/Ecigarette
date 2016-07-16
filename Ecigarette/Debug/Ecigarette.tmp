@@ -22,21 +22,23 @@
   <FILE>Ecigarette.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <Reset><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>191</LINE></Reset>
+  <Reset><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>237</LINE></Reset>
+  <PinToggle><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>152</LINE></PinToggle>
   <Timer0Over><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>95</LINE></Timer0Over>
   <ledIsOn><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>120</LINE></ledIsOn>
   <endBlink><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>128</LINE></endBlink>
   <endOfTimerInt><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>141</LINE></endOfTimerInt>
-  <testShit><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>186</LINE></testShit>
-  <fixedLevels><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>187</LINE></fixedLevels>
-  <testShit2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>188</LINE></testShit2>
-  <Flush><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>197</LINE></Flush>
-  <Start><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>264</LINE></Start>
-  <label1><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>275</LINE></label1>
-  <label2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>281</LINE></label2>
-  <endPowerAdj><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>323</LINE></endPowerAdj>
-  <notSB2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>306</LINE></notSB2>
-  <maxReached><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>302</LINE></maxReached>
-  <minReached><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>320</LINE></minReached>
+  <buttonReleased><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>224</LINE></buttonReleased>
+  <endPowerAdj><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>195</LINE></endPowerAdj>
+  <notSB2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>178</LINE></notSB2>
+  <maxReached><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>174</LINE></maxReached>
+  <minReached><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>192</LINE></minReached>
+  <testcrap1><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>232</LINE></testcrap1>
+  <fixedLevels><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>233</LINE></fixedLevels>
+  <testcrap2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>234</LINE></testcrap2>
+  <Flush><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>243</LINE></Flush>
+  <Start><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>310</LINE></Start>
+  <label1><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>321</LINE></label1>
+  <label2><FILE>C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm</FILE><LINE>327</LINE></label2>
  </LABELS>
 </ASSEMBLER_INFO>
