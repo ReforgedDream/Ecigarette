@@ -630,5 +630,280 @@ LPM R16, Z
 
 UOUT OCR0A, R16
 
+;-------------------------------------
+
+//Preparing data for 7-segment LED and displaying it
+
+SBRS flagStorage, timeToRefresh		//Data refreshing occurs only once in a certain period set by timer
+RJMP notATimeToRefresh				//If the flag isn't set then skip
+
+	ANDI flagStorage, ~(1<<timeToRefresh)	//CBR wont work or I am stupid -_- clear the flag
+
+	//First two digits of the LED
+
+	LDI YL, low(spiMISO)		//Get the address of the buffer that we want to be displayed
+	LDI YH, high(spiMISO)
+	MOV R16, R13				//Get a special pointer that increments by timer
+	ADD YL, R16
+	CLR R16
+	ADC YH, R16					//Add the pointer to the address with carry
+
+	LD R16, Y					//Load a content of the ongoing buffer cell
+
+	MOV YL, R16					//Digits of the byte should be separated 
+	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
+	ANDI YL, 0b_0000_1111		//Mask high...
+	ANDI YH, 0b_1111_0000		//...and low digit
+	LSR YH
+	LSR YH
+	LSR YH
+	LSR YH						//Shift high masked digit right 4 times
+	MOV digitToDisp1, YH
+	MOV digitToDisp2, YL		//Display both high and low digit separately on the LED
+
+	//Last two digits of the LED
+
+	MOV R16, R13				//Load the ordinal number of the cell, that displayed now (supra)
+
+	MOV YL, R16
+	MOV YH, R16
+	ANDI YL, 0b_0000_1111		//Mask high and low digits
+	ANDI YH, 0b_1111_0000
+	LSR YH
+	LSR YH
+	LSR YH
+	LSR YH						//Shift high masked digit right 4 times
+	MOV digitToDisp3, YH
+	MOV digitToDisp4, YL		//Display both high and low digit separately on the LED
+
+	//Any possible errors check
+
+	CPI digitToDisp1, 0x10	//if the 1st register...
+	BRLO HH1				//...is more than F...
+	SET						//...then set the T flag (which means "incorrect number")
+
+	HH1:
+
+		CPI digitToDisp2, 0x10	//if the 2nd one...
+		BRLO HH2				//...is more than F...
+		SET						//...then set the T flag (which means "incorrect number")
+
+	HH2:
+
+			CPI digitToDisp3, 0x10	//if the 3rd one...
+			BRLO HH3				//...is more than F...
+			SET						//...then set the T flag (which means "incorrect number")
+
+	HH3:
+
+				CPI digitToDisp4, 0x10	//if the 4th one...
+				BRLO HH4				//...is more than F...
+				SET						//...then set the T flag (which means "incorrect number")
+
+	HH4:
+
+	CPI digitToDisp1, 0x00	//same for less than 0
+	BRPL LL1				//BRanch if PLus (if the N flag in SREG is cleared)
+	SET
+
+	LL1:
+
+		CPI digitToDisp2, 0x00
+		BRPL LL2			//BRanch if PLus (if the N flag in SREG is cleared)
+		SET
+
+	LL2:
+
+			CPI digitToDisp3, 0x00
+			BRPL LL3		//BRanch if PLus (if the N flag in SREG is cleared)
+			SET
+
+	LL3:
+
+				CPI digitToDisp4, 0x00
+				BRPL LL4			//BRanch if PLus (if the N flag in SREG is cleared)
+				SET
+
+	LL4:
+
+	//Overflows check
+	SBRC flagStorage, spiMOSIBufferOverflow
+	SET
+
+	SBRC flagStorage, spiMISOBufferOverflow
+	SET
+
+	SBRC flagStorage, uartTXBufferOverflow
+	SET
+
+	//Note that the error state (T flag) won't be resetted
+
+	CPI R17, 0			//Is it the time to display 1st digit of LED?
+	BREQ firstDigTeleport
+	
+	CPI R17, 1			//Is it the time to display 2nd digit of LED?
+	BREQ secondDigTeleport
+
+	CPI R17, 2			//Is it the time to display 3rd digit of LED?
+	BREQ thirdDigTeleport
+
+	CPI R17, 3			//Is it the time to display 4th digit of LED?
+	BREQ fourthDigTeleport
+
+notATimeToRefresh:
+
 RJMP Start		//Go to start
 //End of Main Routine//
+
+;--------------------------------------------------------------------------------------------
+
+//Decoding the value of R12//
+Decode:		//if one of 4 digits is chosen, then select a sign to be displayed
+
+LSL R12							//Logical Shift Left: a number gets multiplied by 2 (e.g. 0011<<1 == 0110, 3*2=6)
+LDI ZL, Low(decAddrTable*2)		//Put the low part of the table of addresses' address into Z
+LDI ZH, High(decAddrTable*2)	//Same for the high one
+//Note that the preprocessing of the assembler interpretes addresses as words (for using in program counter)
+//And, in order to appeal to specific bytes (not the whole word), we should multiply an address by 2
+
+CLR R16			//CLeaRing the R16
+ADD ZL, R12		//Adding the "offset" to the address of the table of addresses
+ADC ZH, R16		//If there was an overflow one string upper ^, "C" flag appears...
+				//...So we should handle this flag by ADding zero with Carry
+//Now Z points to the beginning of the table PLUS number of cells defined by R12
+//After all, Z points exactly to desired address in the table
+
+LPM YL, Z+	//Load (from Program Memory) a content of the cell Z points to. And increment Z.
+LPM YH, Z	//Next part of final destination address
+//LPM command works with bytes, not with words, remember?
+
+MOVW ZH:ZL, YH:YL	//now a desired address goes into Z
+
+IJMP		//go to address of a desired subsequence
+//http://easyelectronics.ru/avr-uchebnyj-kurs-vetvleniya.html
+
+RJMP Start	//Go to start of the Main Routine <--- probably, now with index jumping, this string is useless
+;--------------------------------------------------------------------------------------------
+
+firstDig:
+LDI R16, 0b_0000_0001	//Turn on PC0 (1st digit)
+OUT PORTC, R16
+	BRTS dispE				//If the number is incorrect, display the "E" letter ("Err-")
+MOV R12, digitToDisp1	//Just put an appropriate number (that should be lit) in R12
+RJMP decode				//Go to specific digit displaying
+
+secondDig:
+LDI R16, 0b_0000_0010	//Turn on PC1 (2nd digit)
+OUT PORTC, R16
+	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
+MOV R12, digitToDisp2	//Just put an appropriate number (that should be lit) in R12
+RJMP decode				//Go to specific digit displaying
+
+thirdDig:
+LDI R16, 0b_0000_0100	//Turn on PC2 (3rd digit)
+OUT PORTC, R16
+	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
+MOV R12, digitToDisp3	//Just put an appropriate number (that should be lit) in R12
+RJMP decode				//Go to specific digit displaying
+
+fourthDig:
+LDI R16, 0b_0000_1000	//Turn on PC3 (4th digit)
+OUT PORTC, R16
+	BRTS dispDash			//If the number is incorrect, display dash ("Err-")
+MOV R12, digitToDisp4	//Just put an appropriate number (that should be lit) in R12
+RJMP decode				//Go to specific digit displaying
+;--------------------------------------------------------------------------------------------
+
+disp0:
+LDI R16, segind0	//displays 0...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp1:
+LDI R16, segind1	//displays 1...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp2:
+LDI R16, segind2	//displays 2...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp3:
+LDI R16, segind3	//displays 3...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp4:
+LDI R16, segind4	//displays 4...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp5:
+LDI R16, segind5	//displays 5...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp6:
+LDI R16, segind6	//displays 6...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp7:
+LDI R16, segind7	//displays 7...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp8:
+LDI R16, segind8	//displays 8...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+disp9:
+LDI R16, segind9	//displays 9...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispA:
+LDI R16, segindA	//displays A...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispB:
+LDI R16, segindB	//displays B...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispC:
+LDI R16, segindC	//displays C...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispD:
+LDI R16, segindD	//displays D...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispE:
+LDI R16, segindE	//displays E...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+dispF:
+LDI R16, segindF	//displays F...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+;---
+
+dispR:
+LDI R16, segindR	//displays R...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
+
+;---
+
+dispDash:
+LDI R16, segindDash	//displays "-"...
+OUT PORTA, R16		//...on the LED indicator
+RJMP Start			//Get back to the start
