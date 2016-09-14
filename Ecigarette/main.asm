@@ -1,7 +1,7 @@
 ; Created: 25.05.2016 14:12:47
 
 ;.include "tn13adef.inc"
-.include "m64adef.inc"
+.include "m64Adef.inc"
 
 ;.device attiny13a
 .device atmega64a
@@ -51,12 +51,12 @@
 
 .def flagStorage = R19			//Custom flags storage
 								//And custom symbolic bit names, why not
-.equ blockAdj	=	0
-.equ ledState	=	1
-.equ achtung =						2	//USART: new data received
-.equ transmit =						3	//USART: a command sequence is recognized
-.equ timeToRefresh =				4	//LED digits should be refreshed
-.equ uartTXBufferOverflow =			5
+.equ blockAdj				=		0
+.equ ledState				=		1
+.equ achtung				=		2	//USART: new data received
+.equ transmit				=		3	//USART: a command sequence is recognized
+.equ timeToRefresh			=		4	//LED digits should be refreshed
+.equ uartTXBufferOverflow	=		5
 
 .equ control1 = 0x61			//"a"
 .equ control2 = 0x77			//"w"
@@ -229,6 +229,8 @@ Timer0Over:
 PUSHSREG
  PUSH YL
   PUSH YH
+   PUSH R17
+
 /*   
 INC overflowsCounterBlink
 
@@ -291,6 +293,7 @@ RJMP endOfTimerInt
 
 endOfTimerInt:
 
+   POP R17
   POP YH
  POP YL
 POPSREG
@@ -640,7 +643,7 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 	ANDI flagStorage, ~(1<<timeToRefresh)	//CBR wont work or I am stupid -_- clear the flag
 
 	//First two digits of the LED
-
+/*
 	LDI YL, low(spiMISO)		//Get the address of the buffer that we want to be displayed
 	LDI YH, high(spiMISO)
 	MOV R16, R13				//Get a special pointer that increments by timer
@@ -649,6 +652,8 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 	ADC YH, R16					//Add the pointer to the address with carry
 
 	LD R16, Y					//Load a content of the ongoing buffer cell
+*/
+	MOV R16, currentPower		//Display the current power factor
 
 	MOV YL, R16					//Digits of the byte should be separated 
 	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
@@ -663,7 +668,7 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 
 	//Last two digits of the LED
 
-	MOV R16, R13				//Load the ordinal number of the cell, that displayed now (supra)
+//	MOV R16, R13				//Load the ordinal number of the cell, that displayed now (supra)
 
 	MOV YL, R16
 	MOV YH, R16
@@ -727,28 +732,22 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 	LL4:
 
 	//Overflows check
-	SBRC flagStorage, spiMOSIBufferOverflow
-	SET
-
-	SBRC flagStorage, spiMISOBufferOverflow
-	SET
-
 	SBRC flagStorage, uartTXBufferOverflow
 	SET
 
 	//Note that the error state (T flag) won't be resetted
 
 	CPI R17, 0			//Is it the time to display 1st digit of LED?
-	BREQ firstDigTeleport
+	BREQ firstDig
 	
 	CPI R17, 1			//Is it the time to display 2nd digit of LED?
-	BREQ secondDigTeleport
+	BREQ secondDig
 
 	CPI R17, 2			//Is it the time to display 3rd digit of LED?
-	BREQ thirdDigTeleport
+	BREQ thirdDig
 
 	CPI R17, 3			//Is it the time to display 4th digit of LED?
-	BREQ fourthDigTeleport
+	BREQ fourthDig
 
 notATimeToRefresh:
 
