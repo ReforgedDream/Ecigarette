@@ -15,7 +15,7 @@
 			<Description></Description>
 			<Files xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc</AbsolutePath>
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc</AbsolutePath>
 					<Attribute></Attribute>
 					<Category>include</Category>
 					<Condition>AVRASM</Condition>
@@ -26,18 +26,18 @@
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc</AbsolutePath>
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc</AbsolutePath>
 					<Attribute></Attribute>
 					<Category>header</Category>
 					<Condition>AVRASM</Condition>
-					<FileContentHash>hpvAF2TntwJVk8EsBTsXmQ==</FileContentHash>
+					<FileContentHash>D2rTFtgIKLWMrbxlWaGerQ==</FileContentHash>
 					<FileVersion></FileVersion>
-					<Name>avrasm/inc/tn13adef.inc</Name>
+					<Name>avrasm/inc/m64adef.inc</Name>
 					<SelectString></SelectString>
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\templates\main.asm</AbsolutePath>
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\templates\main.asm</AbsolutePath>
 					<Attribute>template</Attribute>
 					<Category>source</Category>
 					<Condition>AVRASM</Condition>
@@ -48,11 +48,11 @@
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
 			</Files>
-			<PackName>ATtiny_DFP</PackName>
-			<PackPath>C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.0.78/Atmel.ATtiny_DFP.pdsc</PackPath>
-			<PackVersion>1.0.78</PackVersion>
+			<PackName>ATmega_DFP</PackName>
+			<PackPath>C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.0.98/Atmel.ATmega_DFP.pdsc</PackPath>
+			<PackVersion>1.0.98</PackVersion>
 			<PresentInProject>true</PresentInProject>
-			<ReferenceConditionId>ATtiny13A</ReferenceConditionId>
+			<ReferenceConditionId>ATmega64A</ReferenceConditionId>
 			<RteComponents xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
 				<d4p1:string></d4p1:string>
 			</RteComponents>

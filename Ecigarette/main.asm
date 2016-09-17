@@ -1,7 +1,7 @@
 ; Created: 25.05.2016 14:12:47
 
 ;.include "tn13adef.inc"
-.include "m64Adef.inc"
+.include "m64adef.inc"
 
 ;.device attiny13a
 .device atmega64a
@@ -513,19 +513,15 @@ OUT SPH, R16
 	ANDI R16, ~(1 << PB7)	//PWM pin disabled by default
 	UOUT DDRB, R16
 
-	LDI R16, 0b_1000_0011	//Fast PWM mode
+	LDI R16, 0b_0110_1101	//Fast PWM mode, clk/1024
 	UOUT TCCR2, R16
-
-	LDI R16, 0b_0000_0011	//clock/64
-	UOUT TCCR0B, R16
-
 
 //Timer0 Initialization
 LDI R16, 0b_0000_0001	//set CS00 bit in TCCR0 register
 OUT TCCR0, R16			//now using system clock for Timer0 without prescaler
 CLR R16
-ANDI R16, (1 << TOIE0 | 1 << TOIE2)	//set CS00 bit in TCCR0 register
-OUT TIMSK, R16			//set TOIE0 in TIMSK register
+ANDI R16, (1 << TOIE0 | 1 << TOIE2)	//overflow IRQ enabled for timer0 and timer2
+OUT TIMSK, R16
 //now we have the overflow interrupt enabled for timer0
 
 //------------------------------------
@@ -609,14 +605,14 @@ ANDI R16, (1<<1)
 BRNE label1
 
 //PRESSED
-	LDI R16, 0b_0000_0101	//PWM pin enabled
+	LDI R16, 0b_1000_0000	//PWM pin enabled
 	UOUT DDRB, R16
 	
 RJMP label2
 label1:
 
 //NOT PRESSED
-	LDI R16, 0b_0000_0100	//PWM pin disabled
+	LDI R16, 0b_0000_0000	//PWM pin disabled
 	UOUT DDRB, R16
 
 label2:

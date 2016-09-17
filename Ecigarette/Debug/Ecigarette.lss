@@ -1,90 +1,9 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Thu Sep 15 00:22:56 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sat Sep 17 16:01:09 2016
 
-[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc'
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): error: Cannot find include file: m64Adef.inc
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(7): warning: Preprocessor: Redefinition of macro '__PART_NAME__'
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(147): error: Use of undefined or forward referenced symbol 'INT1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(148): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(149): error: Use of undefined or forward referenced symbol 'INT2addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(150): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(151): error: Use of undefined or forward referenced symbol 'INT3addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(152): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(154): error: Use of undefined or forward referenced symbol 'INT4addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(155): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(157): error: Use of undefined or forward referenced symbol 'INT5addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(158): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(159): error: Use of undefined or forward referenced symbol 'INT6addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(160): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(161): error: Use of undefined or forward referenced symbol 'INT7addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(162): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(163): error: Use of undefined or forward referenced symbol 'OC2addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(164): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(165): error: Use of undefined or forward referenced symbol 'OVF2addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(166): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(167): error: Use of undefined or forward referenced symbol 'ICP1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(168): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(169): error: Use of undefined or forward referenced symbol 'OC1Aaddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(170): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(171): error: Use of undefined or forward referenced symbol 'OC1Baddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(172): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(173): error: Use of undefined or forward referenced symbol 'OVF1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(174): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(175): error: Use of undefined or forward referenced symbol 'OC0addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(176): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(181): error: Use of undefined or forward referenced symbol 'SPIaddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(182): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(183): error: Use of undefined or forward referenced symbol 'URXC0addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(184): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(185): error: Use of undefined or forward referenced symbol 'UDRE0addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(186): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(187): error: Use of undefined or forward referenced symbol 'UTXC0addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(188): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(195): error: Use of undefined or forward referenced symbol 'OC1Caddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(196): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(197): error: Use of undefined or forward referenced symbol 'ICP3addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(198): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(199): error: Use of undefined or forward referenced symbol 'OC3Aaddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(200): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(201): error: Use of undefined or forward referenced symbol 'OC3Baddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(202): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(203): error: Use of undefined or forward referenced symbol 'OC3Caddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(204): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(205): error: Use of undefined or forward referenced symbol 'OVF3addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(206): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(208): error: Use of undefined or forward referenced symbol 'URXC1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(209): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(211): error: Use of undefined or forward referenced symbol 'UDRE1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(212): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(214): error: Use of undefined or forward referenced symbol 'UTXC1addr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(215): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(216): error: Use of undefined or forward referenced symbol 'TWIaddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(217): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(218): error: Use of undefined or forward referenced symbol 'SPMRaddr' in .org
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(219): error: Overlap in .cseg: addr=0x0 conflicts with 0x0:0x1
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(86): error: Illegal use of undefined or forward referenced symbol 'UCSR1B' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(375): macro 'UIN' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UCSR1B' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(377): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UDR1' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(389): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(86): error: Illegal use of undefined or forward referenced symbol 'UCSR1A' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(419): macro 'UIN' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(86): error: Illegal use of undefined or forward referenced symbol 'UDR1' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(433): macro 'UIN' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'TCCR2' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(517): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UBRR1H' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(541): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UBRR1L' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(543): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UCSR1A' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(554): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UCSR1B' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(566): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'UCSR1C' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(570): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'PORTF' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(588): macro 'UOUT' called here
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(86): error: Illegal use of undefined or forward referenced symbol 'PINF' in conditional
-C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(607): macro 'UIN' called here
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
+C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
+C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'PCMSK' in conditional
+C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(575): macro 'UOUT' called here
+C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(78): error: Illegal use of undefined or forward referenced symbol 'OCR0A' in conditional
+C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(630): macro 'UOUT' called here
