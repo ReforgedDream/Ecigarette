@@ -36,7 +36,7 @@
 .equ owfPerSecond8BitHigh = 0xF4 //supra
 
 //Symbolic custom registers names
-.def currentPower				 =	R17
+.def currentPower				 =	R15
 ;.def overflowsCounterBlink		 =	R18
 .def overflowsCounterBlockAdj	 =	R18
 
@@ -229,7 +229,6 @@ Timer0Over:
 PUSHSREG
  PUSH YL
   PUSH YH
-   PUSH R17
 
 /*   
 INC overflowsCounterBlink
@@ -293,7 +292,6 @@ RJMP endOfTimerInt
 
 endOfTimerInt:
 
-   POP R17
   POP YH
  POP YL
 POPSREG
@@ -320,11 +318,14 @@ RJMP endPowerAdj				//Exit from the interrupt
 
 		//SB2 IS PRESSED
 		ORI flagStorage, (1<<blockAdj)		//Set the flag that forbids further interrupt algorithm executions
-		INC currentPower					//Increment the 'currentPower' pointer
-		CPI currentPower, 0x05				//Compare it with 5 that is over limit
+		LDI R16, 0x01
+		ADD currentPower, R16				//Increment the 'currentPower' pointer
+		LDI R16, 0x05
+		CP currentPower, R16				//Compare it with 5 that is over limit
 		BRLO endPowerAdj					//If the pointer equals 5 then proceed to the next instructions, else jump
 
-			LDI currentPower, 0x04			//Load the pointer with the maximum possible value
+			LDI R16, 0x04
+			MOV currentPower, R16			//Load the pointer with the maximum possible value
 			RJMP endPowerAdj				//Exit from the interrupt
 
 	notSB2:
@@ -336,12 +337,13 @@ RJMP endPowerAdj				//Exit from the interrupt
 		//SB1 IS PRESSED
 
 		ORI flagStorage, (1<<blockAdj)		//Set the flag that forbids further interrupt algorithm executions
-		SUBI currentPower, 0x01				//Decrement the 'currentPower' pointer
+		LDI R16, 0x01
+		SUB currentPower, R16				//Decrement the 'currentPower' pointer
 		BRCS minReached						//If the pointer is below zero, then jump
 		RJMP endPowerAdj					//...else exit from the interrupt
 
 			minReached:
-			LDI currentPower, 0x00			//Load the pointer with the minimum possible value
+			CLR currentPower			//Load the pointer with the minimum possible value
 			
 endPowerAdj:
 
@@ -513,12 +515,13 @@ OUT SPH, R16
 	ANDI R16, ~(1 << PB7)	//PWM pin disabled by default
 	UOUT DDRB, R16
 
-	LDI R16, 0b_0110_1101	//Fast PWM mode, clk/1024
+	LDI R16, 0b_0110_1100	//Fast PWM mode, clk/256
 	UOUT TCCR2, R16
 
 //Timer0 Initialization
 LDI R16, 0b_0000_0001	//set CS00 bit in TCCR0 register
 OUT TCCR0, R16			//now using system clock for Timer0 without prescaler
+
 CLR R16
 ANDI R16, (1 << TOIE0 | 1 << TOIE2)	//overflow IRQ enabled for timer0 and timer2
 OUT TIMSK, R16
@@ -568,11 +571,11 @@ UOUT UCSR1C, R16
 //------------------------------------
 //external interrupt init
 
-LDI R16, 0b_0010_0000	//enable toggle int
-UOUT GIMSK, R16
+LDI R16, 0b_0000_0001	//Any logical change on INT4 generates an interrupt request
+UOUT EICRB, R16
 
-LDI R16, 0b_0001_1000	//pin 3 and 4 toggling contribute to the int. activation
-UOUT PCMSK, R16
+LDI R16, 0b_0001_0000	//pin 4 toggling contribute to the int. activation
+UOUT EIMSK, R16
 
 //------------------------------------
 //gpio init
@@ -580,8 +583,8 @@ UOUT PCMSK, R16
 LDI R16, 0b_0000_0100		//tri-stated inputs, low level on outputs
 UOUT PORTB, R16
 */
-LDI R16, 0b_0000_0100		//tri-stated inputs, low level on outputs
-UOUT PORTF, R16
+//LDI R16, 0b_0000_0100		//tri-stated inputs, low level on outputs
+//UOUT PORTF, R16
 
 LDI R16, 0xFF
 OUT DDRC, R16			//write 1-s into each port C...
@@ -600,16 +603,16 @@ SEI			//interrupts enabled globally
 //Main Routine//
 Start:
 
-UIN R16, PINF
-ANDI R16, (1<<1)
-BRNE label1
+;UIN R16, PINF
+;ANDI R16, (1<<1)
+;BRNE label1
 
 //PRESSED
 	LDI R16, 0b_1000_0000	//PWM pin enabled
 	UOUT DDRB, R16
 	
 RJMP label2
-label1:
+;label1:
 
 //NOT PRESSED
 	LDI R16, 0b_0000_0000	//PWM pin disabled
@@ -627,7 +630,7 @@ CLR R16
 ADC ZH, R16
 LPM R16, Z
 
-UOUT OCR0A, R16
+UOUT OCR2, R16
 
 ;-------------------------------------
 
