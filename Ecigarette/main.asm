@@ -630,7 +630,7 @@ CLR R16
 ADC ZH, R16
 LPM R16, Z
 
-UOUT OCR2, R16
+;UOUT OCR2, R16		//THIS LINE SHOULD BE UNCOMMENTED
 
 ;-------------------------------------
 
@@ -640,6 +640,10 @@ SBRS flagStorage, timeToRefresh		//Data refreshing occurs only once in a certain
 RJMP notATimeToRefresh				//If the flag isn't set then skip
 
 	ANDI flagStorage, ~(1<<timeToRefresh)	//CBR wont work or I am stupid -_- clear the flag
+	//debug
+	LDI R16, 0xFF
+	UOUT OCR2, R16
+	///debug
 
 	//First two digits of the LED
 /*
@@ -652,7 +656,8 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 
 	LD R16, Y					//Load a content of the ongoing buffer cell
 */
-	MOV R16, currentPower		//Display the current power factor
+;	MOV R16, currentPower		//Display the current power factor
+	LDI R16, 0x13
 
 	MOV YL, R16					//Digits of the byte should be separated 
 	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
@@ -667,7 +672,9 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 
 	//Last two digits of the LED
 
-//	MOV R16, R13				//Load the ordinal number of the cell, that displayed now (supra)
+	//debug
+	LDI R16, 0x37				//Load the ordinal number of the cell, that displayed now (supra)
+	///debug
 
 	MOV YL, R16
 	MOV YH, R16

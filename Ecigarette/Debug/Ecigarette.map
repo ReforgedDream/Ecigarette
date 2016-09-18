@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sat Sep 17 22:37:22 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Sep 18 19:21:41 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -937,38 +937,38 @@ CSEG errorFF      000000cb
 CSEG exitInt2     000000d4
 CSEG fixedLevels  000000dc
 CSEG decAddrTable 000000df
-CSEG disp0        0000018d
-CSEG disp1        00000190
-CSEG disp2        00000193
-CSEG disp3        00000196
-CSEG disp4        00000199
-CSEG disp5        0000019c
-CSEG disp6        0000019f
-CSEG disp7        000001a2
-CSEG disp8        000001a5
-CSEG disp9        000001a8
-CSEG dispA        000001ab
-CSEG dispB        000001ae
-CSEG dispC        000001b1
-CSEG dispD        000001b4
-CSEG dispE        000001b7
-CSEG dispF        000001ba
-CSEG dispR        000001bd
-CSEG dispDash     000001c0
+CSEG disp0        0000018f
+CSEG disp1        00000192
+CSEG disp2        00000195
+CSEG disp3        00000198
+CSEG disp4        0000019b
+CSEG disp5        0000019e
+CSEG disp6        000001a1
+CSEG disp7        000001a4
+CSEG disp8        000001a7
+CSEG disp9        000001aa
+CSEG dispA        000001ad
+CSEG dispB        000001b0
+CSEG dispC        000001b3
+CSEG dispD        000001b6
+CSEG dispE        000001b9
+CSEG dispF        000001bc
+CSEG dispR        000001bf
+CSEG dispDash     000001c2
 CSEG Flush        000000f4
 CSEG Start        00000126
 CSEG label2       0000012b
-CSEG notATimeToRefresh 0000016d
-CSEG HH1          0000014e
-CSEG HH2          00000151
-CSEG HH3          00000154
-CSEG HH4          00000157
-CSEG LL1          0000015a
-CSEG LL2          0000015d
-CSEG LL3          00000160
-CSEG LL4          00000163
-CSEG firstDig     00000179
-CSEG secondDig    0000017e
-CSEG thirdDig     00000183
-CSEG fourthDig    00000188
-CSEG Decode       0000016e
+CSEG notATimeToRefresh 0000016f
+CSEG HH1          00000150
+CSEG HH2          00000153
+CSEG HH3          00000156
+CSEG HH4          00000159
+CSEG LL1          0000015c
+CSEG LL2          0000015f
+CSEG LL3          00000162
+CSEG LL4          00000165
+CSEG firstDig     0000017b
+CSEG secondDig    00000180
+CSEG thirdDig     00000185
+CSEG fourthDig    0000018a
+CSEG Decode       00000170

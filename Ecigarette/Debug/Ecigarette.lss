@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sat Sep 17 22:37:22 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Sep 18 19:21:41 2016
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
 C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
@@ -1756,24 +1756,24 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
 0000dd dab3
 0000de 00ff      fixedLevels:	.db 0x4D, 0x7F, 0xB3, 0xDA, 0xFF, 0x00
                  
-0000df 018d
-0000e0 0190
-0000e1 0193
-0000e2 0196
-0000e3 0199      decAddrTable: .dw disp0, disp1, disp2, disp3, disp4, \
-0000e4 019c
-0000e5 019f
-0000e6 01a2
-0000e7 01a5
-0000e8 01a8      		disp5, disp6, disp7, disp8, disp9, \
-0000e9 01ab
-0000ea 01ae
-0000eb 01b1
-0000ec 01b4
-0000ed 01b7
-0000ee 01ba      		dispA, dispB, dispC, dispD, dispE, dispF, \
-0000ef 01bd
-0000f0 01c0      		dispR, dispDash	//Adresses of the labels, stored in a certain place (decAddrTable) in program memory
+0000df 018f
+0000e0 0192
+0000e1 0195
+0000e2 0198
+0000e3 019b      decAddrTable: .dw disp0, disp1, disp2, disp3, disp4, \
+0000e4 019e
+0000e5 01a1
+0000e6 01a4
+0000e7 01a7
+0000e8 01aa      		disp5, disp6, disp7, disp8, disp9, \
+0000e9 01ad
+0000ea 01b0
+0000eb 01b3
+0000ec 01b6
+0000ed 01b9
+0000ee 01bc      		dispA, dispB, dispC, dispD, dispE, dispF, \
+0000ef 01bf
+0000f0 01c2      		dispR, dispDash	//Adresses of the labels, stored in a certain place (decAddrTable) in program memory
                  ;--------------------------------------------------------------------------------------------
                  Reset:
                  
@@ -1932,16 +1932,20 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
 000130 1ff0      ADC ZH, R16
 000131 9104      LPM R16, Z
                  
-000132 bd03      UOUT OCR2, R16
+                 ;UOUT OCR2, R16		//THIS LINE SHOULD BE UNCOMMENTED
                  
                  ;-------------------------------------
                  
                  //Preparing data for 7-segment LED and displaying it
                  
-000133 ff34      SBRS flagStorage, timeToRefresh		//Data refreshing occurs only once in a certain period set by timer
-000134 c038      RJMP notATimeToRefresh				//If the flag isn't set then skip
+000132 ff34      SBRS flagStorage, timeToRefresh		//Data refreshing occurs only once in a certain period set by timer
+000133 c03b      RJMP notATimeToRefresh				//If the flag isn't set then skip
                  
-000135 7e3f      	ANDI flagStorage, ~(1<<timeToRefresh)	//CBR wont work or I am stupid -_- clear the flag
+000134 7e3f      	ANDI flagStorage, ~(1<<timeToRefresh)	//CBR wont work or I am stupid -_- clear the flag
+                 	//debug
+000135 ef0f      	LDI R16, 0xFF
+000136 bd03      	UOUT OCR2, R16
+                 	///debug
                  
                  	//First two digits of the LED
                  /*
@@ -1954,105 +1958,108 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  
                  	LD R16, Y					//Load a content of the ongoing buffer cell
                  */
-000136 2d0f      	MOV R16, currentPower		//Display the current power factor
+                 ;	MOV R16, currentPower		//Display the current power factor
+000137 e103      	LDI R16, 0x13
                  
-000137 2fc0      	MOV YL, R16					//Digits of the byte should be separated 
-000138 2fd0      	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
-000139 70cf      	ANDI YL, 0b_0000_1111		//Mask high...
-00013a 7fd0      	ANDI YH, 0b_1111_0000		//...and low digit
-00013b 95d6      	LSR YH
+000138 2fc0      	MOV YL, R16					//Digits of the byte should be separated 
+000139 2fd0      	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
+00013a 70cf      	ANDI YL, 0b_0000_1111		//Mask high...
+00013b 7fd0      	ANDI YH, 0b_1111_0000		//...and low digit
 00013c 95d6      	LSR YH
 00013d 95d6      	LSR YH
-00013e 95d6      	LSR YH						//Shift high masked digit right 4 times
-00013f 2f5d      	MOV digitToDisp1, YH
-000140 2f6c      	MOV digitToDisp2, YL		//Display both high and low digit separately on the LED
+00013e 95d6      	LSR YH
+00013f 95d6      	LSR YH						//Shift high masked digit right 4 times
+000140 2f5d      	MOV digitToDisp1, YH
+000141 2f6c      	MOV digitToDisp2, YL		//Display both high and low digit separately on the LED
                  
                  	//Last two digits of the LED
                  
-                 //	MOV R16, R13				//Load the ordinal number of the cell, that displayed now (supra)
+                 	//debug
+000142 e307      	LDI R16, 0x37				//Load the ordinal number of the cell, that displayed now (supra)
+                 	///debug
                  
-000141 2fc0      	MOV YL, R16
-000142 2fd0      	MOV YH, R16
-000143 70cf      	ANDI YL, 0b_0000_1111		//Mask high and low digits
-000144 7fd0      	ANDI YH, 0b_1111_0000
-000145 95d6      	LSR YH
-000146 95d6      	LSR YH
+000143 2fc0      	MOV YL, R16
+000144 2fd0      	MOV YH, R16
+000145 70cf      	ANDI YL, 0b_0000_1111		//Mask high and low digits
+000146 7fd0      	ANDI YH, 0b_1111_0000
 000147 95d6      	LSR YH
-000148 95d6      	LSR YH						//Shift high masked digit right 4 times
-000149 2f7d      	MOV digitToDisp3, YH
-00014a 2f4c      	MOV digitToDisp4, YL		//Display both high and low digit separately on the LED
+000148 95d6      	LSR YH
+000149 95d6      	LSR YH
+00014a 95d6      	LSR YH						//Shift high masked digit right 4 times
+00014b 2f7d      	MOV digitToDisp3, YH
+00014c 2f4c      	MOV digitToDisp4, YL		//Display both high and low digit separately on the LED
                  
                  	//Any possible errors check
                  
-00014b 3150      	CPI digitToDisp1, 0x10	//if the 1st register...
-00014c f008      	BRLO HH1				//...is more than F...
-00014d 9468      	SET						//...then set the T flag (which means "incorrect number")
+00014d 3150      	CPI digitToDisp1, 0x10	//if the 1st register...
+00014e f008      	BRLO HH1				//...is more than F...
+00014f 9468      	SET						//...then set the T flag (which means "incorrect number")
                  
                  	HH1:
                  
-00014e 3160      		CPI digitToDisp2, 0x10	//if the 2nd one...
-00014f f008      		BRLO HH2				//...is more than F...
-000150 9468      		SET						//...then set the T flag (which means "incorrect number")
+000150 3160      		CPI digitToDisp2, 0x10	//if the 2nd one...
+000151 f008      		BRLO HH2				//...is more than F...
+000152 9468      		SET						//...then set the T flag (which means "incorrect number")
                  
                  	HH2:
                  
-000151 3170      			CPI digitToDisp3, 0x10	//if the 3rd one...
-000152 f008      			BRLO HH3				//...is more than F...
-000153 9468      			SET						//...then set the T flag (which means "incorrect number")
+000153 3170      			CPI digitToDisp3, 0x10	//if the 3rd one...
+000154 f008      			BRLO HH3				//...is more than F...
+000155 9468      			SET						//...then set the T flag (which means "incorrect number")
                  
                  	HH3:
                  
-000154 3140      				CPI digitToDisp4, 0x10	//if the 4th one...
-000155 f008      				BRLO HH4				//...is more than F...
-000156 9468      				SET						//...then set the T flag (which means "incorrect number")
+000156 3140      				CPI digitToDisp4, 0x10	//if the 4th one...
+000157 f008      				BRLO HH4				//...is more than F...
+000158 9468      				SET						//...then set the T flag (which means "incorrect number")
                  
                  	HH4:
                  
-000157 3050      	CPI digitToDisp1, 0x00	//same for less than 0
-000158 f40a      	BRPL LL1				//BRanch if PLus (if the N flag in SREG is cleared)
-000159 9468      	SET
+000159 3050      	CPI digitToDisp1, 0x00	//same for less than 0
+00015a f40a      	BRPL LL1				//BRanch if PLus (if the N flag in SREG is cleared)
+00015b 9468      	SET
                  
                  	LL1:
                  
-00015a 3060      		CPI digitToDisp2, 0x00
-00015b f40a      		BRPL LL2			//BRanch if PLus (if the N flag in SREG is cleared)
-00015c 9468      		SET
+00015c 3060      		CPI digitToDisp2, 0x00
+00015d f40a      		BRPL LL2			//BRanch if PLus (if the N flag in SREG is cleared)
+00015e 9468      		SET
                  
                  	LL2:
                  
-00015d 3070      			CPI digitToDisp3, 0x00
-00015e f40a      			BRPL LL3		//BRanch if PLus (if the N flag in SREG is cleared)
-00015f 9468      			SET
+00015f 3070      			CPI digitToDisp3, 0x00
+000160 f40a      			BRPL LL3		//BRanch if PLus (if the N flag in SREG is cleared)
+000161 9468      			SET
                  
                  	LL3:
                  
-000160 3040      				CPI digitToDisp4, 0x00
-000161 f40a      				BRPL LL4			//BRanch if PLus (if the N flag in SREG is cleared)
-000162 9468      				SET
+000162 3040      				CPI digitToDisp4, 0x00
+000163 f40a      				BRPL LL4			//BRanch if PLus (if the N flag in SREG is cleared)
+000164 9468      				SET
                  
                  	LL4:
                  
                  	//Overflows check
-000163 fd35      	SBRC flagStorage, uartTXBufferOverflow
-000164 9468      	SET
+000165 fd35      	SBRC flagStorage, uartTXBufferOverflow
+000166 9468      	SET
                  
                  	//Note that the error state (T flag) won't be resetted
                  
-000165 3010      	CPI R17, 0			//Is it the time to display 1st digit of LED?
-000166 f091      	BREQ firstDig
+000167 3010      	CPI R17, 0			//Is it the time to display 1st digit of LED?
+000168 f091      	BREQ firstDig
                  	
-000167 3011      	CPI R17, 1			//Is it the time to display 2nd digit of LED?
-000168 f0a9      	BREQ secondDig
+000169 3011      	CPI R17, 1			//Is it the time to display 2nd digit of LED?
+00016a f0a9      	BREQ secondDig
                  
-000169 3012      	CPI R17, 2			//Is it the time to display 3rd digit of LED?
-00016a f0c1      	BREQ thirdDig
+00016b 3012      	CPI R17, 2			//Is it the time to display 3rd digit of LED?
+00016c f0c1      	BREQ thirdDig
                  
-00016b 3013      	CPI R17, 3			//Is it the time to display 4th digit of LED?
-00016c f0d9      	BREQ fourthDig
+00016d 3013      	CPI R17, 3			//Is it the time to display 4th digit of LED?
+00016e f0d9      	BREQ fourthDig
                  
                  notATimeToRefresh:
                  
-00016d cfb8      RJMP Start		//Go to start
+00016f cfb6      RJMP Start		//Go to start
                  //End of Main Routine//
                  
                  ;--------------------------------------------------------------------------------------------
@@ -2060,152 +2067,152 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  //Decoding the value of R12//
                  Decode:		//if one of 4 digits is chosen, then select a sign to be displayed
                  
-00016e 0ccc      LSL R12							//Logical Shift Left: a number gets multiplied by 2 (e.g. 0011<<1 == 0110, 3*2=6)
-00016f ebee      LDI ZL, Low(decAddrTable*2)		//Put the low part of the table of addresses' address into Z
-000170 e0f1      LDI ZH, High(decAddrTable*2)	//Same for the high one
+000170 0ccc      LSL R12							//Logical Shift Left: a number gets multiplied by 2 (e.g. 0011<<1 == 0110, 3*2=6)
+000171 ebee      LDI ZL, Low(decAddrTable*2)		//Put the low part of the table of addresses' address into Z
+000172 e0f1      LDI ZH, High(decAddrTable*2)	//Same for the high one
                  //Note that the preprocessing of the assembler interpretes addresses as words (for using in program counter)
                  //And, in order to appeal to specific bytes (not the whole word), we should multiply an address by 2
                  
-000171 2700      CLR R16			//CLeaRing the R16
-000172 0dec      ADD ZL, R12		//Adding the "offset" to the address of the table of addresses
-000173 1ff0      ADC ZH, R16		//If there was an overflow one string upper ^, "C" flag appears...
+000173 2700      CLR R16			//CLeaRing the R16
+000174 0dec      ADD ZL, R12		//Adding the "offset" to the address of the table of addresses
+000175 1ff0      ADC ZH, R16		//If there was an overflow one string upper ^, "C" flag appears...
                  				//...So we should handle this flag by ADding zero with Carry
                  //Now Z points to the beginning of the table PLUS number of cells defined by R12
                  //After all, Z points exactly to desired address in the table
                  
-000174 91c5      LPM YL, Z+	//Load (from Program Memory) a content of the cell Z points to. And increment Z.
-000175 91d4      LPM YH, Z	//Next part of final destination address
+000176 91c5      LPM YL, Z+	//Load (from Program Memory) a content of the cell Z points to. And increment Z.
+000177 91d4      LPM YH, Z	//Next part of final destination address
                  //LPM command works with bytes, not with words, remember?
                  
-000176 01fe      MOVW ZH:ZL, YH:YL	//now a desired address goes into Z
+000178 01fe      MOVW ZH:ZL, YH:YL	//now a desired address goes into Z
                  
-000177 9409      IJMP		//go to address of a desired subsequence
+000179 9409      IJMP		//go to address of a desired subsequence
                  //http://easyelectronics.ru/avr-uchebnyj-kurs-vetvleniya.html
                  
-000178 cfad      RJMP Start	//Go to start of the Main Routine <--- probably, now with index jumping, this string is useless
+00017a cfab      RJMP Start	//Go to start of the Main Routine <--- probably, now with index jumping, this string is useless
                  ;--------------------------------------------------------------------------------------------
                  
                  firstDig:
-000179 e001      LDI R16, 0b_0000_0001	//Turn on PC0 (1st digit)
-00017a bb05      OUT PORTC, R16
-00017b f1de      	BRTS dispE				//If the number is incorrect, display the "E" letter ("Err-")
-00017c 2ec5      MOV R12, digitToDisp1	//Just put an appropriate number (that should be lit) in R12
-00017d cff0      RJMP decode				//Go to specific digit displaying
+00017b e001      LDI R16, 0b_0000_0001	//Turn on PC0 (1st digit)
+00017c bb05      OUT PORTC, R16
+00017d f1de      	BRTS dispE				//If the number is incorrect, display the "E" letter ("Err-")
+00017e 2ec5      MOV R12, digitToDisp1	//Just put an appropriate number (that should be lit) in R12
+00017f cff0      RJMP decode				//Go to specific digit displaying
                  
                  secondDig:
-00017e e002      LDI R16, 0b_0000_0010	//Turn on PC1 (2nd digit)
-00017f bb05      OUT PORTC, R16
-000180 f1e6      	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
-000181 2ec6      MOV R12, digitToDisp2	//Just put an appropriate number (that should be lit) in R12
-000182 cfeb      RJMP decode				//Go to specific digit displaying
+000180 e002      LDI R16, 0b_0000_0010	//Turn on PC1 (2nd digit)
+000181 bb05      OUT PORTC, R16
+000182 f1e6      	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
+000183 2ec6      MOV R12, digitToDisp2	//Just put an appropriate number (that should be lit) in R12
+000184 cfeb      RJMP decode				//Go to specific digit displaying
                  
                  thirdDig:
-000183 e004      LDI R16, 0b_0000_0100	//Turn on PC2 (3rd digit)
-000184 bb05      OUT PORTC, R16
-000185 f1be      	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
-000186 2ec7      MOV R12, digitToDisp3	//Just put an appropriate number (that should be lit) in R12
-000187 cfe6      RJMP decode				//Go to specific digit displaying
+000185 e004      LDI R16, 0b_0000_0100	//Turn on PC2 (3rd digit)
+000186 bb05      OUT PORTC, R16
+000187 f1be      	BRTS dispR				//If the number is incorrect, display the "r" letter ("Err-")
+000188 2ec7      MOV R12, digitToDisp3	//Just put an appropriate number (that should be lit) in R12
+000189 cfe6      RJMP decode				//Go to specific digit displaying
                  
                  fourthDig:
-000188 e008      LDI R16, 0b_0000_1000	//Turn on PC3 (4th digit)
-000189 bb05      OUT PORTC, R16
-00018a f1ae      	BRTS dispDash			//If the number is incorrect, display dash ("Err-")
-00018b 2ec4      MOV R12, digitToDisp4	//Just put an appropriate number (that should be lit) in R12
-00018c cfe1      RJMP decode				//Go to specific digit displaying
+00018a e008      LDI R16, 0b_0000_1000	//Turn on PC3 (4th digit)
+00018b bb05      OUT PORTC, R16
+00018c f1ae      	BRTS dispDash			//If the number is incorrect, display dash ("Err-")
+00018d 2ec4      MOV R12, digitToDisp4	//Just put an appropriate number (that should be lit) in R12
+00018e cfe1      RJMP decode				//Go to specific digit displaying
                  ;--------------------------------------------------------------------------------------------
                  
                  disp0:
-00018d ec00      LDI R16, segind0	//displays 0...
-00018e bb0b      OUT PORTA, R16		//...on the LED indicator
-00018f cf96      RJMP Start			//Get back to the start
+00018f ec00      LDI R16, segind0	//displays 0...
+000190 bb0b      OUT PORTA, R16		//...on the LED indicator
+000191 cf94      RJMP Start			//Get back to the start
                  
                  disp1:
-000190 ef09      LDI R16, segind1	//displays 1...
-000191 bb0b      OUT PORTA, R16		//...on the LED indicator
-000192 cf93      RJMP Start			//Get back to the start
+000192 ef09      LDI R16, segind1	//displays 1...
+000193 bb0b      OUT PORTA, R16		//...on the LED indicator
+000194 cf91      RJMP Start			//Get back to the start
                  
                  disp2:
-000193 ea04      LDI R16, segind2	//displays 2...
-000194 bb0b      OUT PORTA, R16		//...on the LED indicator
-000195 cf90      RJMP Start			//Get back to the start
+000195 ea04      LDI R16, segind2	//displays 2...
+000196 bb0b      OUT PORTA, R16		//...on the LED indicator
+000197 cf8e      RJMP Start			//Get back to the start
                  
                  disp3:
-000196 eb00      LDI R16, segind3	//displays 3...
-000197 bb0b      OUT PORTA, R16		//...on the LED indicator
-000198 cf8d      RJMP Start			//Get back to the start
+000198 eb00      LDI R16, segind3	//displays 3...
+000199 bb0b      OUT PORTA, R16		//...on the LED indicator
+00019a cf8b      RJMP Start			//Get back to the start
                  
                  disp4:
-000199 e909      LDI R16, segind4	//displays 4...
-00019a bb0b      OUT PORTA, R16		//...on the LED indicator
-00019b cf8a      RJMP Start			//Get back to the start
+00019b e909      LDI R16, segind4	//displays 4...
+00019c bb0b      OUT PORTA, R16		//...on the LED indicator
+00019d cf88      RJMP Start			//Get back to the start
                  
                  disp5:
-00019c e902      LDI R16, segind5	//displays 5...
-00019d bb0b      OUT PORTA, R16		//...on the LED indicator
-00019e cf87      RJMP Start			//Get back to the start
+00019e e902      LDI R16, segind5	//displays 5...
+00019f bb0b      OUT PORTA, R16		//...on the LED indicator
+0001a0 cf85      RJMP Start			//Get back to the start
                  
                  disp6:
-00019f e802      LDI R16, segind6	//displays 6...
-0001a0 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001a1 cf84      RJMP Start			//Get back to the start
+0001a1 e802      LDI R16, segind6	//displays 6...
+0001a2 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001a3 cf82      RJMP Start			//Get back to the start
                  
                  disp7:
-0001a2 ef08      LDI R16, segind7	//displays 7...
-0001a3 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001a4 cf81      RJMP Start			//Get back to the start
+0001a4 ef08      LDI R16, segind7	//displays 7...
+0001a5 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001a6 cf7f      RJMP Start			//Get back to the start
                  
                  disp8:
-0001a5 e800      LDI R16, segind8	//displays 8...
-0001a6 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001a7 cf7e      RJMP Start			//Get back to the start
+0001a7 e800      LDI R16, segind8	//displays 8...
+0001a8 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001a9 cf7c      RJMP Start			//Get back to the start
                  
                  disp9:
-0001a8 e900      LDI R16, segind9	//displays 9...
-0001a9 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001aa cf7b      RJMP Start			//Get back to the start
+0001aa e900      LDI R16, segind9	//displays 9...
+0001ab bb0b      OUT PORTA, R16		//...on the LED indicator
+0001ac cf79      RJMP Start			//Get back to the start
                  
                  dispA:
-0001ab e808      LDI R16, segindA	//displays A...
-0001ac bb0b      OUT PORTA, R16		//...on the LED indicator
-0001ad cf78      RJMP Start			//Get back to the start
+0001ad e808      LDI R16, segindA	//displays A...
+0001ae bb0b      OUT PORTA, R16		//...on the LED indicator
+0001af cf76      RJMP Start			//Get back to the start
                  
                  dispB:
-0001ae e803      LDI R16, segindB	//displays B...
-0001af bb0b      OUT PORTA, R16		//...on the LED indicator
-0001b0 cf75      RJMP Start			//Get back to the start
+0001b0 e803      LDI R16, segindB	//displays B...
+0001b1 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001b2 cf73      RJMP Start			//Get back to the start
                  
                  dispC:
-0001b1 ec06      LDI R16, segindC	//displays C...
-0001b2 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001b3 cf72      RJMP Start			//Get back to the start
+0001b3 ec06      LDI R16, segindC	//displays C...
+0001b4 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001b5 cf70      RJMP Start			//Get back to the start
                  
                  dispD:
-0001b4 ea01      LDI R16, segindD	//displays D...
-0001b5 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001b6 cf6f      RJMP Start			//Get back to the start
+0001b6 ea01      LDI R16, segindD	//displays D...
+0001b7 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001b8 cf6d      RJMP Start			//Get back to the start
                  
                  dispE:
-0001b7 e806      LDI R16, segindE	//displays E...
-0001b8 bb0b      OUT PORTA, R16		//...on the LED indicator
-0001b9 cf6c      RJMP Start			//Get back to the start
+0001b9 e806      LDI R16, segindE	//displays E...
+0001ba bb0b      OUT PORTA, R16		//...on the LED indicator
+0001bb cf6a      RJMP Start			//Get back to the start
                  
                  dispF:
-0001ba e80e      LDI R16, segindF	//displays F...
-0001bb bb0b      OUT PORTA, R16		//...on the LED indicator
-0001bc cf69      RJMP Start			//Get back to the start
+0001bc e80e      LDI R16, segindF	//displays F...
+0001bd bb0b      OUT PORTA, R16		//...on the LED indicator
+0001be cf67      RJMP Start			//Get back to the start
                  
                  ;---
                  
                  dispR:
-0001bd ea0f      LDI R16, segindR	//displays R...
-0001be bb0b      OUT PORTA, R16		//...on the LED indicator
-0001bf cf66      RJMP Start			//Get back to the start
+0001bf ea0f      LDI R16, segindR	//displays R...
+0001c0 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001c1 cf64      RJMP Start			//Get back to the start
                  
                  ;---
                  
                  dispDash:
-0001c0 eb0f      LDI R16, segindDash	//displays "-"...
-0001c1 bb0b      OUT PORTA, R16		//...on the LED indicator
+0001c2 eb0f      LDI R16, segindDash	//displays "-"...
+0001c3 bb0b      OUT PORTA, R16		//...on the LED indicator
 
 
 RESOURCE USE INFORMATION
@@ -2225,7 +2232,7 @@ counted separately from r26..r31 here.
 "ATmega64A" register use summary:
 x  :   1 y  :   3 z  :   5 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   6 
-r13:   0 r14:   0 r15:   7 r16: 151 r17:   7 r18:  22 r19:  13 r20:   4 
+r13:   0 r14:   0 r15:   6 r16: 153 r17:   7 r18:  22 r19:  13 r20:   4 
 r21:   4 r22:   4 r23:   4 r24:   3 r25:   3 r26:   2 r27:   2 r28:  20 
 r29:  28 r30:  10 r31:  10 
 Registers used: 21 out of 35 (60.0%)
@@ -2241,8 +2248,8 @@ clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  13 cls   :   0
 clt   :   0 clv   :   0 clz   :   0 com   :   1 cp    :   3 cpc   :   1 
 cpi   :  20 cpse  :   0 dec   :   1 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   1 in    :   8 inc   :   3 jmp   :   0 
-ld    :   2 ldd   :   0 ldi   :  59 lds   :   5 lpm   :   5 lsl   :   1 
-lsr   :   8 mov   :  15 movw  :   1 mul   :   0 muls  :   0 mulsu :   0 
+ld    :   2 ldd   :   0 ldi   :  62 lds   :   5 lpm   :   5 lsl   :   1 
+lsr   :   8 mov   :  14 movw  :   1 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   5 out   :  39 pop   :  16 
 push  :  16 rcall :   0 ret   :   0 reti  :  34 rjmp  :  38 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
@@ -2255,7 +2262,7 @@ Instructions used: 42 out of 113 (37.2%)
 "ATmega64A" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000386    790     42    832   65536   1.3%
+[.cseg] 0x000000 0x00038a    794     42    836   65536   1.3%
 [.dseg] 0x000100 0x000113      0     19     19    4096   0.5%
 [.eseg] 0x000000 0x000000      0      0      0    2048   0.0%
 
