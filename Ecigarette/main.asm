@@ -32,8 +32,8 @@
 						//and 0x7A12 on 8 MHz
 //150 Hz (0x01A1) works well for the red LED indicator
 //200 Hz (0x0139) for the green 4-digit indicator
-.equ owfPerSecond8BitLow = 0x24
-.equ owfPerSecond8BitHigh = 0xF4 //supra
+.equ owfPerSecond8BitLow = 0x12
+.equ owfPerSecond8BitHigh = 0x7A //supra
 
 //Symbolic custom registers names
 .def currentPower				 =	R15
@@ -151,8 +151,8 @@ uartTXWrite:		.BYTE 1
 	.ORG INT3addr	; External Interrupt Request 3
 	RETI
 
-	.ORG INT4addr	; External Interrupt Request 4
-	RJMP PinToggle
+		.ORG INT4addr	; External Interrupt Request 4
+		RJMP PinToggle
 
 	.ORG INT5addr	; External Interrupt Request 5
 	RETI
@@ -175,8 +175,8 @@ uartTXWrite:		.BYTE 1
 	.ORG OC0addr	;(TIMER0 COMP) Timer/Counter0 Compare Match
 	RETI
 
-	.ORG OVF0addr	;(TIMER0 OVF) Timer/Counter0 Overflow
-	RJMP Timer0Over
+		.ORG OVF0addr	;(TIMER0 OVF) Timer/Counter0 Overflow
+		RJMP Timer0Over
 
 	.ORG SPIaddr	;(SPI,STC) Serial Transfer Complete
 	RETI
@@ -205,11 +205,11 @@ uartTXWrite:		.BYTE 1
 	.ORG OVF3addr	; Timer/Counter3 Overflow
 	RETI
 
-	.ORG URXC1addr	;(USART1,RXC) USART1, Rx Complete
-	RJMP U1_RXcomplete
+		.ORG URXC1addr	;(USART1,RXC) USART1, Rx Complete
+		RJMP U1_RXcomplete
 
-	.ORG UDRE1addr	;(USART1,UDRE) USART1 Data Register Empty
-	RJMP U1_DREmpty
+		.ORG UDRE1addr	;(USART1,UDRE) USART1 Data Register Empty
+		RJMP U1_DREmpty
 
 	.ORG UTXC1addr	;(USART1,TXC) USART1, Tx Complete
 	RETI
