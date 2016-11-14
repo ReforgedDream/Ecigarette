@@ -53,7 +53,7 @@
 								//And custom symbolic bit names, why not
 .equ blockAdj				=		0
 .equ ledState				=		1
-.equ achtung				=		2	//USART: new data received
+.equ achtung				=		2	//USART: a new data received
 .equ transmit				=		3	//USART: a command sequence is recognized
 .equ timeToRefresh			=		4	//LED digits should be refreshed
 .equ uartTXBufferOverflow	=		5
