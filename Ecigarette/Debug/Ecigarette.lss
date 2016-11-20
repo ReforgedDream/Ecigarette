@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Sep 18 19:21:41 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Nov 20 14:23:20 2016
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
 C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.98\avrasm\inc\m64adef.inc'
@@ -1302,8 +1302,8 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  						//and 0x7A12 on 8 MHz
                  //150 Hz (0x01A1) works well for the red LED indicator
                  //200 Hz (0x0139) for the green 4-digit indicator
-                 .equ owfPerSecond8BitLow = 0x24
-                 .equ owfPerSecond8BitHigh = 0xF4 //supra
+                 .equ owfPerSecond8BitLow = 0x12
+                 .equ owfPerSecond8BitHigh = 0x7A //supra
                  
                  //Symbolic custom registers names
                  .def currentPower				 =	R15
@@ -1323,7 +1323,7 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  								//And custom symbolic bit names, why not
                  .equ blockAdj				=		0
                  .equ ledState				=		1
-                 .equ achtung				=		2	//USART: new data received
+                 .equ achtung				=		2	//USART: a new data received
                  .equ transmit				=		3	//USART: a command sequence is recognized
                  .equ timeToRefresh			=		4	//LED digits should be refreshed
                  .equ uartTXBufferOverflow	=		5
@@ -1421,8 +1421,8 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  	.ORG INT3addr	; External Interrupt Request 3
 000008 9518      	RETI
                  
-                 	.ORG INT4addr	; External Interrupt Request 4
-00000a c059      	RJMP PinToggle
+                 		.ORG INT4addr	; External Interrupt Request 4
+00000a c059      		RJMP PinToggle
                  
                  	.ORG INT5addr	; External Interrupt Request 5
 00000c 9518      	RETI
@@ -1445,8 +1445,8 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  	.ORG OC0addr	;(TIMER0 COMP) Timer/Counter0 Compare Match
 00001e 9518      	RETI
                  
-                 	.ORG OVF0addr	;(TIMER0 OVF) Timer/Counter0 Overflow
-000020 c025      	RJMP Timer0Over
+                 		.ORG OVF0addr	;(TIMER0 OVF) Timer/Counter0 Overflow
+000020 c025      		RJMP Timer0Over
                  
                  	.ORG SPIaddr	;(SPI,STC) Serial Transfer Complete
 000022 9518      	RETI
@@ -1475,11 +1475,11 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(4): Inc
                  	.ORG OVF3addr	; Timer/Counter3 Overflow
 00003a 9518      	RETI
                  
-                 	.ORG URXC1addr	;(USART1,RXC) USART1, Rx Complete
-00003c c075      	RJMP U1_RXcomplete
+                 		.ORG URXC1addr	;(USART1,RXC) USART1, Rx Complete
+00003c c075      		RJMP U1_RXcomplete
                  
-                 	.ORG UDRE1addr	;(USART1,UDRE) USART1 Data Register Empty
-00003e c049      	RJMP U1_DREmpty
+                 		.ORG UDRE1addr	;(USART1,UDRE) USART1 Data Register Empty
+00003e c049      		RJMP U1_DREmpty
                  
                  	.ORG UTXC1addr	;(USART1,TXC) USART1, Tx Complete
 000040 9518      	RETI

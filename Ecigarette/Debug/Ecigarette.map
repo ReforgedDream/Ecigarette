@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Sep 18 19:21:41 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Nov 20 14:23:20 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -890,8 +890,8 @@ EQU  segindF      0000008e
 EQU  segindR      000000af
 EQU  presetLow    00000039
 EQU  presetHigh   00000001
-EQU  owfPerSecond8BitLow 00000024
-EQU  owfPerSecond8BitHigh 000000f4
+EQU  owfPerSecond8BitLow 00000012
+EQU  owfPerSecond8BitHigh 0000007a
 DEF  currentPower r15
 DEF  overflowsCounterBlockAdj r18
 DEF  digitToDisp1 r21
