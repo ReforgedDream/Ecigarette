@@ -107,7 +107,7 @@ POP R16			//Extract R16 value from stack
 .ORG SRAM_START //start from the beginning
 
 uartRX:				.BYTE uartRAMStorageRXLength	//allocate space for read buffer...
-uartErrorsCounter:	.BYTE 1		//...and for errors counter
+uartErrorsCounter:	.BYTE 1							//...and for errors counter
 
 uartTX:				.BYTE uartRAMStorageTXLength	//allocate space for write buffer
 uartTXRead:			.BYTE 1
@@ -510,20 +510,23 @@ OUT SPH, R16
 
 //Timer initialization
 
-	//Timer2
+//Timer2
 	UIN R16, DDRB
 	ANDI R16, ~(1 << PB7)	//PWM pin disabled by default
 	UOUT DDRB, R16
 
-	LDI R16, 0b_0110_1100	//Fast PWM mode, clk/256
+	CLR R16			//probably excessive
+	LDI R16, ((0 << FOC2) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (1 << WGM21) | (1 << CS22) | (0 << CS21) | (0 << CS20))
+	//Fast PWM mode, non-inverting, clk/256
 	UOUT TCCR2, R16
 
-//Timer0 Initialization
-LDI R16, 0b_0000_0001	//set CS00 bit in TCCR0 register
-OUT TCCR0, R16			//now using system clock for Timer0 without prescaler
+//Timer0
+	CLR R16			//probably excessive
+	LDI R16, ((0 << FOC0) | (0 << WGM00) | (0 << COM01) | (0 << COM00) | (0 << WGM01) | (0 << CS02) | (0 << CS01) | (1 << CS00))	//set CS00 bit in TCCR0 register
+	OUT TCCR0, R16			//now using system clock for Timer0 without prescaler
 
 CLR R16
-ANDI R16, (1 << TOIE0 | 1 << TOIE2)	//overflow IRQ enabled for timer0 and timer2
+ORI R16, (1 << TOIE0)	//overflow IRQ enabled for timer0
 OUT TIMSK, R16
 //now we have the overflow interrupt enabled for timer0
 
@@ -656,8 +659,8 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 
 	LD R16, Y					//Load a content of the ongoing buffer cell
 */
-;	MOV R16, currentPower		//Display the current power factor
-	LDI R16, 0x13
+	MOV R16, currentPower		//Display the current power factor
+;	LDI R16, 0x13
 
 	MOV YL, R16					//Digits of the byte should be separated 
 	MOV YH, R16					//(a byte in hexadecimal form consists of two digits maximum)
@@ -673,7 +676,7 @@ RJMP notATimeToRefresh				//If the flag isn't set then skip
 	//Last two digits of the LED
 
 	//debug
-	LDI R16, 0x37				//Load the ordinal number of the cell, that displayed now (supra)
+	LDI R16, 0x00				//Load the ordinal number of the cell, that displayed now (supra)
 	///debug
 
 	MOV YL, R16
