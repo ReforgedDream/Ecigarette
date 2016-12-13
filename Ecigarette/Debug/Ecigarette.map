@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Dec 11 20:39:08 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Tue Dec 13 22:04:11 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -888,8 +888,8 @@ EQU  segindD      000000a1
 EQU  segindE      00000086
 EQU  segindF      0000008e
 EQU  segindR      000000af
-EQU  presetLow    00000039
-EQU  presetHigh   00000001
+EQU  presetLow    0000009c
+EQU  presetHigh   00000000
 EQU  owfPerSecond8BitLow 00000012
 EQU  owfPerSecond8BitHigh 0000007a
 DEF  currentPower r15
@@ -911,7 +911,7 @@ EQU  control1     00000061
 EQU  control2     00000077
 EQU  control3     0000006b
 EQU  blink        00000004
-EQU  buttonCutoff 0000000b
+EQU  buttonCutoff 0000005b
 EQU  uartRAMStorageRXLength 00000008
 EQU  uartRAMStorageTXLength 00000008
 DSEG uartRX       00000100
@@ -937,38 +937,38 @@ CSEG errorFF      000000cb
 CSEG exitInt2     000000d4
 CSEG fixedLevels  000000dc
 CSEG decAddrTable 000000df
-CSEG disp0        00000191
-CSEG disp1        00000194
-CSEG disp2        00000197
-CSEG disp3        0000019a
-CSEG disp4        0000019d
-CSEG disp5        000001a0
-CSEG disp6        000001a3
-CSEG disp7        000001a6
-CSEG disp8        000001a9
-CSEG disp9        000001ac
-CSEG dispA        000001af
-CSEG dispB        000001b2
-CSEG dispC        000001b5
-CSEG dispD        000001b8
-CSEG dispE        000001bb
-CSEG dispF        000001be
-CSEG dispR        000001c1
-CSEG dispDash     000001c4
+CSEG disp0        00000192
+CSEG disp1        00000195
+CSEG disp2        00000198
+CSEG disp3        0000019b
+CSEG disp4        0000019e
+CSEG disp5        000001a1
+CSEG disp6        000001a4
+CSEG disp7        000001a7
+CSEG disp8        000001aa
+CSEG disp9        000001ad
+CSEG dispA        000001b0
+CSEG dispB        000001b3
+CSEG dispC        000001b6
+CSEG dispD        000001b9
+CSEG dispE        000001bc
+CSEG dispF        000001bf
+CSEG dispR        000001c2
+CSEG dispDash     000001c5
 CSEG Flush        000000f4
 CSEG Start        00000128
 CSEG label2       0000012d
-CSEG notATimeToRefresh 00000171
-CSEG HH1          00000152
-CSEG HH2          00000155
-CSEG HH3          00000158
-CSEG HH4          0000015b
-CSEG LL1          0000015e
-CSEG LL2          00000161
-CSEG LL3          00000164
-CSEG LL4          00000167
-CSEG firstDig     0000017d
-CSEG secondDig    00000182
-CSEG thirdDig     00000187
-CSEG fourthDig    0000018c
-CSEG Decode       00000172
+CSEG notATimeToRefresh 00000172
+CSEG HH1          00000153
+CSEG HH2          00000156
+CSEG HH3          00000159
+CSEG HH4          0000015c
+CSEG LL1          0000015f
+CSEG LL2          00000162
+CSEG LL3          00000165
+CSEG LL4          00000168
+CSEG firstDig     0000017e
+CSEG secondDig    00000183
+CSEG thirdDig     00000188
+CSEG fourthDig    0000018d
+CSEG Decode       00000173
