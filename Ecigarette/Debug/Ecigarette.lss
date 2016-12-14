@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sat Jul 16 23:21:01 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Wed Dec 14 20:01:03 2016
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc'
 C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc'
@@ -840,8 +840,8 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Inc
                  
                  //---
                  
-00007c e5e0      LDI ZL, low(fixedLevels)
-00007d e0f0      LDI ZH, high(fixedLevels)
+00007c eae0      LDI ZL, low(fixedLevels*2)
+00007d e0f0      LDI ZH, high(fixedLevels*2)
 00007e 2f07      MOV R16, currentPower
 00007f 0fe0      ADD ZL, R16
 000080 2711      CLR R17

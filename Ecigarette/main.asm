@@ -302,8 +302,8 @@ label2:
 
 //---
 
-LDI ZL, low(fixedLevels)
-LDI ZH, high(fixedLevels)
+LDI ZL, low(fixedLevels*2)
+LDI ZH, high(fixedLevels*2)
 MOV R16, currentPower
 ADD ZL, R16
 CLR R17
