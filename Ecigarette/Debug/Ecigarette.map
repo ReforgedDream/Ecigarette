@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Wed Dec 14 20:01:03 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Dec 18 18:49:02 2016
 
 
 EQU  SIGNATURE_000 0000001e
@@ -292,28 +292,36 @@ EQU  OC0Baddr     00000007
 EQU  WDTaddr      00000008
 EQU  ADCCaddr     00000009
 EQU  INT_VECTORS_SIZE 0000000a
+DEF  overflowsCounterOffMode r22
 DEF  currentPower r23
 DEF  overflowsCounterBlink r24
 DEF  overflowsCounterBlockAdj r25
 DEF  flagStorage  r19
 EQU  blockAdj     00000000
 EQU  ledState     00000001
+EQU  offMode      00000002
+EQU  sb1          00000003
+EQU  sb2          00000004
+EQU  sb3          00000001
+EQU  ledPin       00000002
+EQU  pwmPin       00000000
 EQU  blink        00000004
-EQU  buttonCutoff 0000000b
-EQU  owfPerSecond8BitHigh 00000000
-EQU  owfPerSecond8BitLow 00000049
-CSEG Reset        00000053
-CSEG PinToggle    00000030
+EQU  buttonCutoff 0000000f
+EQU  offModeTime  000000ff
+CSEG Reset        00000061
+CSEG PinToggle    0000003d
 CSEG Timer0Over   0000000a
-CSEG ledIsOn      0000001d
-CSEG endBlink     00000022
-CSEG endOfTimerInt 00000029
-CSEG buttonReleased 0000004e
-CSEG endPowerAdj  0000004a
-CSEG notSB2       00000042
-CSEG minReached   00000049
-CSEG fixedLevels  00000050
-CSEG Flush        00000056
-CSEG Start        00000074
-CSEG label1       0000007a
-CSEG label2       0000007c
+CSEG ledIsOn      0000001c
+CSEG endBlink     00000021
+CSEG endOfBlockAdj 00000028
+CSEG endOfTimerInt 00000036
+CSEG offModeDisabled 00000035
+CSEG blockAndExit 0000005c
+CSEG endPowerAdj  00000058
+CSEG notSB2       0000004f
+CSEG minReached   00000056
+CSEG fixedLevels  0000005e
+CSEG Flush        00000064
+CSEG Start        00000082
+CSEG disablePWM   0000008b
+CSEG exitPWMEnablingAlgorithm 0000008e

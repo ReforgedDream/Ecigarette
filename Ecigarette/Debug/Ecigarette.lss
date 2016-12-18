@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Wed Dec 14 20:01:03 2016
+AVRASM ver. 2.2.0  C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm Sun Dec 18 18:49:02 2016
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc'
 C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.0.78\avrasm\inc\tn13adef.inc'
@@ -532,23 +532,33 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Inc
                  
                  .device attiny13a
                  
-                 //Constants definition
-                 
                  //Symbolic custom registers names
-                 .def currentPower				 =	R23
-                 .def overflowsCounterBlink		 =	R24
-                 .def overflowsCounterBlockAdj	 =	R25
+                 
+                 .def overflowsCounterOffMode	 =	R22		//counter of time; continuously compared with a specific preset - time of both buttons held down
+                 .def currentPower				 =	R23		//current PWM duty cycle; value from 0 to 4
+                 .def overflowsCounterBlink		 =	R24		//counter of time; continuously compared with a specific preset - LED blinking
+                 .def overflowsCounterBlockAdj	 =	R25		//counter of time; continuously compared with a specific preset - contact bouncing cutoff
                  
                  .def flagStorage = R19			//Custom flags storage
-                 								//And custom symbolic bit names, why not
-                 .equ blockAdj	=	0
-                 .equ ledState	=	1
+                 								//And custom symbolic bit names
+                 .equ blockAdj	=	0			//State of buttons (1 if blocked) - contact bouncing cutoff
+                 .equ ledState	=	1			//State of the LED
+                 .equ offMode	=	2			//1 if 'off mode' is enabled
                  
-                 .equ blink = 0x04				//0x04 = 55 ms on 8 MHz, prescaler=64, system divider=8 
-                 .equ buttonCutoff = 0x0B		//0x07 = 100 ms on 8 MHz, prescaler=64, system divider=8
+                 //Constants definition
                  
-                 .equ owfPerSecond8BitHigh = 0x00
-                 .equ owfPerSecond8BitLow = 0x49		//8 MHz, prescaler=64, system divider=8 -> ~73 (0x0049) 8-bit overflows/sec
+                 //Buttons' pins
+                 .equ sb1	=	3	//SB1 is attached to the Port B, pin 3
+                 .equ sb2	=	4	//SB2 is attached to the Port B, pin 4
+                 .equ sb3	=	1	//SB3 is attached to the Port B, pin 1
+                 .equ ledPin	=	2	//LED is attached to the Port B, pin 2 (SCK)
+                 .equ pwmPin	=	0	//Transistor is attached to the Port B, pin 0 (MOSI)
+                 
+                 //Timings
+                 .equ blink			=	0x04		//0x04 = 54.4 ms	on 9.6 MHz, prescaler=64, system divider=8 
+                 .equ buttonCutoff	=	0x0F		//0x0B = 149.6 ms	on 9.6 MHz, prescaler=64, system divider=8
+                 .equ offModeTime	=	0xFF		//0x0F = 204 ms		on 9.6 MHz, prescaler=64, system divider=8
+                 									//0xFF = 3.468 sec	on 9.6 MHz, prescaler=64, system divider=8
                  
                  ;--------------------------------------------------------------------------------------------
                  ;Macro definitions
@@ -590,13 +600,13 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Inc
                  //Reset and Interrupt Vectors table
                  
                  	.ORG 0x0000	;(RESET) 
-000000 c052      	RJMP Reset
+000000 c060      	RJMP Reset
                  
                  	.ORG INT0addr	;External Interrupt 0 (IRQ0 Handler)
 000001 9518      	RETI
                  
                  	.ORG PCI0addr	;External Interrupt Request 0 (PCINT0 Handler) (pin change)
-000002 c02d      	RJMP PinToggle
+000002 c03a      	RJMP PinToggle
                  	
                  	.ORG OVF0addr	;Timer/Counter0 Overflow
 000003 c006      	RJMP Timer0Over
@@ -620,121 +630,160 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Inc
                  //Interrupts Handler//
                  ;-------------------
                  
-                 Timer0Over:
+                 //Timer/Counter0 Overflow
+                 
+                 Timer0Over:		
                  
 00000a 930f
 00000b b70f
 00000c 930f      PUSHSREG
 00000d 93cf       PUSH YL
 00000e 93df        PUSH YH
-00000f 931f         PUSH R17
-                    
-000010 9583      INC overflowsCounterBlink
+00000f 931f         PUSH R17						//Save SREG and all used registers in stack
+                 
+                 //LED blinking algorithm:
+                 
+000010 9583      INC overflowsCounterBlink		//Increment the counter
                  
 000011 fd31      SBRC flagStorage, ledState		//Skip next instruction if the LED is off
-000012 c00a      RJMP ledIsOn	
+000012 c009      RJMP ledIsOn	
                  
-000013 b706      	UIN R16, OCR0A
-000014 9500      	COM R16
-000015 9506      	LSR R16
-000016 770f      	ANDI R16, ~(1<<7)
+000013 b706      	UIN R16, OCR0A				//Read the value of PWM duty cycle...
+000014 9500      	COM R16						//...invert it...
+000015 9506      	LSR R16						//and divide by 2
                  
-000017 1780      	CP overflowsCounterBlink, R16
-000018 f048      	BRLO endBlink
+000016 1780      	CP overflowsCounterBlink, R16	//the result of previous operations is the duration of switched off state of the LED
+000017 f048      	BRLO endBlink					//The timeout is not over yet; exit the algorithm
                  
-000019 2788      		CLR overflowsCounterBlink
-00001a 6032      		ORI flagStorage, (1<<ledState)
-00001b 98c2      		CBI PORTB, 2
-00001c c005      		RJMP endBlink
+000018 2788      		CLR overflowsCounterBlink		//When the timeout is over, clear the counter...
+000019 6032      		ORI flagStorage, (1<<ledState)	//...clear the flag of the LED's state...
+00001a 98c2      		CBI PORTB, 2					//...turn the LED off...
+00001b c005      		RJMP endBlink					//...and exit the algorithm
                  	
-                 ledIsOn:
+                 ledIsOn:		//if the LED is on:
                  
-00001d 3084      	CPI overflowsCounterBlink, blink
-00001e f018      	BRLO endBlink
-00001f 2788      		CLR overflowsCounterBlink
-000020 7f3d      		ANDI flagStorage, ~(1<<ledState)
-000021 9ac2      		SBI PORTB, 2
+00001c 3084      	CPI overflowsCounterBlink, blink		//compare the counter with the turned-on-state time preset
+00001d f018      	BRLO endBlink							//if not reached yet, exit the algorithm
+00001e 2788      		CLR overflowsCounterBlink			//When the timeout is over, clear the counter...
+00001f 7f3d      		ANDI flagStorage, ~(1<<ledState)	//...set the flag of the LED's state...
+000020 9ac2      		SBI PORTB, 2						//...and turn the LED off
                  
                  endBlink:
                  
-000022 ff30      SBRS flagStorage, blockAdj			//If blockAdj==0 then skip
-000023 c005      RJMP endOfTimerInt
+                 //End of the LED blinking algorithm.
                  
-000024 9593      	INC overflowsCounterBlockAdj
+                 //Contact bouncing cutoff algorithm:
                  
-000025 309b      	CPI overflowsCounterBlockAdj, buttonCutoff
-000026 f010      	BRLO endOfTimerInt	
+000021 ff30      SBRS flagStorage, blockAdj			//If the corresponding flag is set, enter the algorithm
+000022 c005      RJMP endOfBlockAdj
                  
-000027 2799      		CLR overflowsCounterBlockAdj
-000028 7f3e      		ANDI flagStorage, ~(1<<blockAdj)
+000023 9593      	INC overflowsCounterBlockAdj	//Increment the counter
+                 
+000024 309f      	CPI overflowsCounterBlockAdj, buttonCutoff	//If it's the time to clear the flag that blocks the buttons?
+000025 f010      	BRLO endOfBlockAdj							//if not, exit the algorithm
+                 
+000026 2799      		CLR overflowsCounterBlockAdj			//Clear the counter
+000027 7f3e      		ANDI flagStorage, ~(1<<blockAdj)		//Clear the flag
+                 
+                 endOfBlockAdj:
+                 
+                 //End of the contact bouncing cutoff algorithm.
+                 
+                 //Algorithm of entering the 'off mode':
+                 
+000028 b306      UIN R16, PINB					//Detecting if any of the adjusting buttons are pressed
+000029 9500      COM R16							//Inversion (buttons are active low)
+00002a 7108      ANDI R16, (1 << sb1 | 1 << sb2)		//Clear all the bits except the adjusting buttons
+00002b 3108      CPI R16, (1 << sb1 | 1 << sb2)		//If both buttons are pressed...
+00002c f449      BRNE endOfTimerInt
+                 
+00002d 9563      	INC overflowsCounterOffMode	//...then increment the 'off mode' counter
+                 
+00002e 3f6f      	CPI overflowsCounterOffMode, offModeTime	//Compare the counter with the preset
+00002f f030      	BRLO endOfTimerInt							//If it's not the time, then exit
+                 
+000030 2766      		CLR overflowsCounterOffMode		//Or else, clear the counter
+000031 ff32      		SBRS flagStorage, offMode		//Skip next instruction if 'off mode' is active
+000032 c002      		RJMP offModeDisabled
+                 
+000033 7f3b      		ANDI flagStorage, ~(1 << offMode)	//Disable 'off mode'
+000034 c001      		RJMP endOfTimerInt
+                 
+                 offModeDisabled:		//If 'off mode' disabled...
+                 		
+000035 6034      		ORI flagStorage, (1 << offMode)	//...then enable 'off mode'
                  
                  endOfTimerInt:
                  
-000029 911f         POP R17
-00002a 91df        POP YH
-00002b 91cf       POP YL
-00002c 910f
-00002d bf0f
-00002e 910f      POPSREG
+                 //End of entering the 'off mode' algorithm.
                  
-00002f 9518      RETI
+000036 911f         POP R17	//Extract registers from the stack
+000037 91df        POP YH
+000038 91cf       POP YL
+000039 910f
+00003a bf0f
+00003b 910f      POPSREG
+                 
+00003c 9518      RETI
                  
                  ;-------------------
                  
                  PinToggle:
                  
-000030 930f
-000031 b70f
-000032 930f      PUSHSREG
+00003d 930f
+00003e b70f
+00003f 930f      PUSHSREG
                  
-000033 b306      UIN R16, PINB					//Detecting if any of the adjusting buttons are pressed
-000034 9500      COM R16							//Inversion (buttons are active low)
-000035 7108      ANDI R16, (1 << 3 | 1 << 4)		//If no buttons is pressed, then the int is generated by button release
-000036 f0b9      BREQ buttonReleased				//Jump to setting the flag 'blockAdj' and then exit
+000040 b306      UIN R16, PINB						//Detecting if any of the adjusting buttons are pressed
+000041 9500      COM R16								//Inversion (buttons are active low)
+000042 7108      ANDI R16, (1 << sb1 | 1 << sb2)		//If no buttons is pressed, then the int is generated by button release
+000043 f0c1      BREQ blockAndExit					//Jump to setting the flag 'blockAdj' and then exit
                  
-000037 fd30      SBRC flagStorage, blockAdj		//If blockAdj==1 then skip
-000038 c011      RJMP endPowerAdj				//Exit from the interrupt
+000044 fd30      SBRC flagStorage, blockAdj		//If contact bouncing cutoff disabled, then enter the algorithm
+000045 c012      RJMP endPowerAdj				//else exit from the interrupt
                  
-000039 b306      	UIN R16, PINB
-00003a 7100      	ANDI R16, (1<<4)			//Detecting the SB2 button's state
-00003b f431      	BRNE notSB2					//If R16 is zero now, then SB2 is pressed
+000046 b306      	UIN R16, PINB
+000047 7100      	ANDI R16, (1 << sb2)		//Detecting the SB2 button state
+000048 f431      	BRNE notSB2					//If R16 is zero now, then SB2 is pressed
                  
                  		//SB2 IS PRESSED
-00003c 6031      		ORI flagStorage, (1<<blockAdj)		//Set the flag that forbids further interrupt algorithm executions
-00003d 9573      		INC currentPower					//Increment the 'currentPower' pointer
-00003e 3075      		CPI currentPower, 0x05				//Compare it with 5 that is over limit
-00003f f050      		BRLO endPowerAdj					//If the pointer equals 5 then proceed to the next instructions, else jump
                  
-000040 e074      			LDI currentPower, 0x04			//Load the pointer with the maximum possible value
-000041 c008      			RJMP endPowerAdj				//Exit from the interrupt
+000049 6031      		ORI flagStorage, (1 << blockAdj)	//Set the flag that forbids further interrupt algorithm executions
+00004a 9573      		INC currentPower					//Increment the 'currentPower' pointer
+00004b 3075      		CPI currentPower, 0x05				//Compare it with 5 that is over limit
+00004c f078      		BRLO blockAndExit					//If the pointer equals 5 then proceed to the next instructions, else jump
+                 
+00004d e074      			LDI currentPower, 0x04			//Load the pointer with the maximum possible value
+00004e c00d      			RJMP blockAndExit				//Exit from the interrupt
                  
                  	notSB2:
                  
-000042 b306      	UIN R16, PINB
-000043 7008      	ANDI R16, (1<<3)						//Detecting the SB1 button's state
-000044 f429      	BRNE endPowerAdj						//If R16 is zero now, then SB1 is pressed
+00004f b306      	UIN R16, PINB
+000050 7008      	ANDI R16, (1 << sb1)		//Detecting the SB1 button's state
+000051 f431      	BRNE endPowerAdj			//If R16 is zero now, then SB1 is pressed
                  
                  		//SB1 IS PRESSED
                  
-000045 6031      		ORI flagStorage, (1<<blockAdj)		//Set the flag that forbids further interrupt algorithm executions
-000046 5071      		SUBI currentPower, 0x01				//Decrement the 'currentPower' pointer
-000047 f008      		BRCS minReached						//If the pointer is below zero, then jump
-000048 c001      		RJMP endPowerAdj					//...else exit from the interrupt
+000052 6031      		ORI flagStorage, (1 << blockAdj)	//Set the flag that forbids further interrupt algorithm executions
+000053 5071      		SUBI currentPower, 0x01				//Decrement the 'currentPower' pointer
+000054 f008      		BRCS minReached						//If the pointer is below zero, then jump
+000055 c006      		RJMP blockAndExit					//...else exit from the interrupt
                  
                  			minReached:
-000049 e070      			LDI currentPower, 0x00			//Load the pointer with the minimum possible value
-                 			
+000056 e070      			LDI currentPower, 0x00			//Load the pointer with the minimum possible value
+000057 c004      			RJMP blockAndExit
+                 
                  endPowerAdj:
                  
-00004a 910f
-00004b bf0f
-00004c 910f      POPSREG
+000058 910f
+000059 bf0f
+00005a 910f      POPSREG		//Extract SREG and R16 from stack
                  
-00004d 9518      RETI
+00005b 9518      RETI		//Exit from the interrupt
                  
-                 buttonReleased:
-00004e 6031      	ORI flagStorage, (1<<blockAdj)			//Forbid further button processing in order to cut off contact bouncing
-00004f cffa      	RJMP endPowerAdj
+                 blockAndExit:
+00005c 6031      	ORI flagStorage, (1 << blockAdj)		//Forbid further button processing in order to cut off contact bouncing
+00005d cffa      	RJMP endPowerAdj
                  
                  ;-------------------
                  
@@ -743,114 +792,129 @@ C:\Data\Ёлектроника\Atmel Studio projects\Ecigarette\Ecigarette\main.asm(3): Inc
                  ;--------------------------------------------------------------------------------------------
                  //Storage of static data in flash
                  
-000050 7f4d
-000051 dab3
-000052 00ff      fixedLevels:	.db 0x4D, 0x7F, 0xB3, 0xDA, 0xFF, 0x00
+                 //Values of the desired PWM duty cycle
+                 
+00005e 7f4d
+00005f dab3
+000060 00ff      fixedLevels:	.db 0x4D, 0x7F, 0xB3, 0xDA, 0xFF, 0x00
                  
                  ;--------------------------------------------------------------------------------------------
+                 
                  Reset:
                  
                  //SRAM flush
-000053 e6e0      			LDI	ZL, Low(SRAM_START)	; Load Z with SRAM start address
-000054 e0f0      			LDI	ZH, High(SRAM_START)
-000055 2700      			CLR	R16					; R16 <- 0x00
-000056 9301      Flush:		ST 	Z+, R16				; Flush byte and increment
-000057 30f0      			CPI	ZH, High(RAMEND+1)	; Is ZH == high half of the RAMEND address?
-000058 f7e9      			BRNE Flush				; Loop if no
+000061 e6e0      			LDI	ZL, Low(SRAM_START)	; Load Z with SRAM start address
+000062 e0f0      			LDI	ZH, High(SRAM_START)
+000063 2700      			CLR	R16					; R16 <- 0x00
+000064 9301      Flush:		ST 	Z+, R16				; Flush byte and increment
+000065 30f0      			CPI	ZH, High(RAMEND+1)	; Is ZH == high half of the RAMEND address?
+000066 f7e9      			BRNE Flush				; Loop if no
                  
-000059 3ae0      			CPI	ZL,Low(RAMEND+1)	; Same for low half of the address
-00005a f7d9      			BRNE Flush
+000067 3ae0      			CPI	ZL,Low(RAMEND+1)	; Same for low half of the address
+000068 f7d9      			BRNE Flush
                  
-00005b 27ee      		CLR	ZL
-00005c 27ff      		CLR	ZH
+000069 27ee      		CLR	ZL
+00006a 27ff      		CLR	ZH
                  
                  //R0-R31 flush
-00005d e1ee      	LDI	ZL, 0x1E	; Address of R30 (in SRAM address space)
-00005e 27ff      	CLR	ZH
-00005f 95ea      	DEC	ZL			; Decrement address (flushing begins from R29 since we use R30:R31 as an address pointer)
-000060 83f0      	ST Z, ZH		; Load register with zero
-000061 f7e9      	BRNE PC-2		; If Zero flag is cleared step back 2 times
+00006b e1ee      	LDI	ZL, 0x1E	; Address of R30 (in SRAM address space)
+00006c 27ff      	CLR	ZH
+00006d 95ea      	DEC	ZL			; Decrement address (flushing begins from R29 since we use R30:R31 as an address pointer)
+00006e 83f0      	ST Z, ZH		; Load register with zero
+00006f f7e9      	BRNE PC-2		; If Zero flag is cleared step back 2 times
                  
                  //Thanks for code to DI HALT, Testicq and all fellow comrades from easyelectronics.ru
                  
                  //Stack initialization
-000062 e90f      LDI R16, RAMEND
-000063 bf0d      UOUT SPL, R16
+000070 e90f      LDI R16, RAMEND
+000071 bf0d      UOUT SPL, R16
                  
                  //------------------------------------
                  
                  //Timer initialization
-000064 e002      LDI R16, 0b_0000_0010	//interrupts
-000065 bf09      UOUT TIMSK0, R16			//set TOIE0 in TIMSK0 register (overflow enabled)
+000072 e002      LDI R16, (1 << TOIE0)		//set TOIE0 in TIMSK0 register (Timer/Counter0 Overflow Interrupt Enable)
+000073 bf09      UOUT TIMSK0, R16			//interrupts enabling register
                  
-                 	//Timer2
-000066 e004      	LDI R16, 0b_0000_0100	//PWM pin disabled by default
-000067 bb07      	UOUT DDRB, R16
+                 	//Timer0
+                 	
+                 	//Bits 3 and 2 are reserved
+000074 e803      	LDI R16,	(1 << COM0A1 | 0 << COM0A0 | 0 << COM0B1 | 0 << COM0B0 | 0 << 3 | 0 << 2 | 1 << WGM01 | 1 << WGM00)
+000075 bd0f      	UOUT TCCR0A, R16	//Fast PWM mode
                  
-000068 e803      	LDI R16, 0b_1000_0011	//Fast PWM mode
-000069 bd0f      	UOUT TCCR0A, R16
-                 
-00006a e003      	LDI R16, 0b_0000_0011	//clock/64
-00006b bf03      	UOUT TCCR0B, R16
+                 	//Bits 5 and 4 are reserved
+000076 e003      	LDI R16,	(0 << FOC0A | 0 << FOC0B | 0 << 5 | 0 << 4 | 0 << WGM02 | 0 << CS02 | 1 << CS01 | 1 << CS00)
+000077 bf03      	UOUT TCCR0B, R16	//clock/64, with system prescaler = 8 equals 13.6 ms
                  
                  //------------------------------------
                  //external interrupt init
                  
-00006c e200      LDI R16, 0b_0010_0000	//enable toggle int
-00006d bf0b      UOUT GIMSK, R16
+                 //PCIE: Pin Change Interrupt Enable
+                 //Bit 7 and bits 4-0 are reserved
+000078 e200      LDI R16,	(0 << 7 | 0 << INT0 | 1 << PCIE | 0 << 4 | 0 << 3 | 0 << 2 | 0 << 1 | 0 << 0)
+000079 bf0b      UOUT GIMSK, R16		//General Interrupt Mask Register - enable toggle int
                  
-00006e e108      LDI R16, 0b_0001_1000	//pin 3 and 4 toggling contribute to the int. activation
-00006f bb05      UOUT PCMSK, R16
+                 //Bits 7 and 6 are reserved
+00007a e108      LDI R16,	(0 << 7 | 0 << 6 | 0 << PCINT5 | 1 << PCINT4 | 1 << PCINT3 | 0 << PCINT2 | 0 << PCINT1 | 0 << PCINT0)
+00007b bb05      UOUT PCMSK, R16		//pin 3 and 4 toggling contribute to the int. activation
                  
                  //------------------------------------
                  //gpio init
                  
-000070 e004      LDI R16, 0b_0000_0100		//tri-stated inputs, low level on outputs
-000071 bb08      UOUT PORTB, R16
+00007c e004      LDI R16, (1 << ledPin | 0 << pwmPin)	//Configure LED pin as output (PWM pin disabled by default)
+00007d bb07      UOUT DDRB, R16
+                 
+00007e e004      LDI R16, (1 << ledPin)		//tri-stated inputs, low level on outputs. LED is off by default
+00007f bb08      UOUT PORTB, R16
                  
                  //------------------------------------
                  
-000072 2700      CLR R16		//clear R16 for the order's sake
+000080 2700      CLR R16		//clear R16 for the order's sake
                  
-                 ;LDI currentPower, 0x01
-                 
-000073 9478      SEI			//interrupts enabled globally
+000081 9478      SEI			//interrupts enabled globally
                  
                  ;--------------------------------------------------------------------------------------------
                  
                  //Main Routine//
                  Start:
                  
-000074 b306      UIN R16, PINB
-000075 7002      ANDI R16, (1<<1)
-000076 f419      BRNE label1
+000082 fd32      SBRC flagStorage, offMode	//If 'off mode' is active, then keep PWM pin disabled
+000083 c007      RJMP disablePWM
                  
-                 //PRESSED
-000077 e005      	LDI R16, 0b_0000_0101	//PWM pin enabled
-000078 bb07      	UOUT DDRB, R16
+000084 b306      UIN R16, PINB			//Read the button state
+000085 7002      ANDI R16, (1 << sb3)	//Clear all the bits except the SB3 button state
+000086 f421      BRNE disablePWM			//If not a zero, then SB3 is released; so go to PWM pin disabling
+                 
+                 	//SB3 is pressed
+000087 b307      	UIN R16, DDRB			//Read the direction register value
+000088 6001      	ORI R16, (1 << pwmPin)	//Enable PWM pin
+000089 bb07      	UOUT DDRB, R16			//Write the direction register
                  	
-000079 c002      RJMP label2
-                 label1:
+00008a c003      RJMP exitPWMEnablingAlgorithm	//Exit the algorithm
                  
-                 //NOT PRESSED
-00007a e004      	LDI R16, 0b_0000_0100	//PWM pin disabled
-00007b bb07      	UOUT DDRB, R16
+                 disablePWM:
                  
-                 label2:
+                 	//SB3 is not pressed
+00008b b307      	UIN R16, DDRB				//Read the direction register value
+00008c 7f0e      	ANDI R16, ~(1 << pwmPin)	//Disable PWM pin
+00008d bb07      	UOUT DDRB, R16				//Write the direction register
+                 
+                 exitPWMEnablingAlgorithm:
                  
                  //---
                  
-00007c eae0      LDI ZL, low(fixedLevels*2)
-00007d e0f0      LDI ZH, high(fixedLevels*2)
-00007e 2f07      MOV R16, currentPower
-00007f 0fe0      ADD ZL, R16
-000080 2711      CLR R17
-000081 1ff1      ADC ZH, R17
-000082 9104      LPM R16, Z
+00008e ebec      LDI ZL, low(fixedLevels * 2)	//Get the location of the fixed PWM levels values
+00008f e0f0      LDI ZH, high(fixedLevels * 2)	//Assembler refers to flash in 2-byte words, so the multiplication by 2 is required!
+000090 2f07      MOV R16, currentPower			//Get the current PWM duty cycle value
+000091 0fe0      ADD ZL, R16						//Use it as an offset in memory
+000092 2711      CLR R17
+000093 1ff1      ADC ZH, R17						//Addition with carry
+000094 9104      LPM R16, Z						//Read a value from flash memory
                  
-000083 bf06      UOUT OCR0A, R16
+000095 bf06      UOUT OCR0A, R16					//Set this value as PWM duty cycle
                  
-000084 cfef      RJMP Start		//Go to start
+                 //---
+                 
+000096 cfeb      RJMP Start			//Go to start
                  //End of Main Routine//
 
 
@@ -871,27 +935,27 @@ counted separately from r26..r31 here.
 "ATtiny13A" register use summary:
 x  :   0 y  :   0 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  53 r17:   4 r18:   0 r19:   9 r20:   0 
-r21:   0 r22:   0 r23:   6 r24:   5 r25:   3 r26:   0 r27:   0 r28:   2 
+r13:   0 r14:   0 r15:   0 r16:  58 r17:   4 r18:   0 r19:  13 r20:   0 
+r21:   0 r22:   3 r23:   6 r24:   5 r25:   3 r26:   0 r27:   0 r28:   2 
 r29:   2 r30:   7 r31:   7 
-Registers used: 11 out of 35 (31.4%)
+Registers used: 12 out of 35 (34.3%)
 
 "ATtiny13A" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   1 add   :   1 adiw  :   0 and   :   0 
-andi  :   7 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+andi  :   9 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   1 break :   0 breq  :   1 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   5 brlt  :   0 brmi  :   0 
+brne  :   7 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 cbi   :   1 cbr   :   0 clc   :   0 
-clh   :   0 cli   :   0 cln   :   0 clr   :   9 cls   :   0 clt   :   0 
-clv   :   0 clz   :   0 com   :   2 cp    :   1 cpc   :   0 cpi   :   5 
-cpse  :   0 dec   :   1 eor   :   0 icall :   0 ijmp  :   0 in    :   7 
-inc   :   3 ld    :   0 ldd   :   0 ldi   :  17 lds   :   0 lpm   :   2 
+clh   :   0 cli   :   0 cln   :   0 clr   :  10 cls   :   0 clt   :   0 
+clv   :   0 clz   :   0 com   :   3 cp    :   1 cpc   :   0 cpi   :   7 
+cpse  :   0 dec   :   1 eor   :   0 icall :   0 ijmp  :   0 in    :  10 
+inc   :   4 ld    :   0 ldd   :   0 ldi   :  15 lds   :   0 lpm   :   2 
 lsl   :   0 lsr   :   1 mov   :   1 movw  :   0 neg   :   0 nop   :   0 
-or    :   0 ori   :   4 out   :  13 pop   :   7 push  :   7 rcall :   0 
-ret   :   0 reti  :   9 rjmp  :  12 rol   :   0 ror   :   0 sbc   :   0 
+or    :   0 ori   :   6 out   :  13 pop   :   7 push  :   7 rcall :   0 
+ret   :   0 reti  :   9 rjmp  :  16 rol   :   0 ror   :   0 sbc   :   0 
 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 
-sbrc  :   2 sbrs  :   1 sec   :   0 seh   :   0 sei   :   1 sen   :   0 
+sbrc  :   3 sbrs  :   2 sec   :   0 seh   :   0 sei   :   1 sen   :   0 
 ser   :   0 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 
 spm   :   0 st    :   2 std   :   0 sts   :   0 sub   :   0 subi  :   1 
 swap  :   0 tst   :   0 wdr   :   0 
@@ -900,7 +964,7 @@ Instructions used: 31 out of 105 (29.5%)
 "ATtiny13A" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00010a    260      6    266    1024  26.0%
+[.cseg] 0x000000 0x00012e    296      6    302    1024  29.5%
 [.dseg] 0x000060 0x000060      0      0      0      64   0.0%
 [.eseg] 0x000000 0x000000      0      0      0      64   0.0%
 
